@@ -54,14 +54,15 @@ class Blender:
         process = self._run_process('unwrap.py', filepath)
         logging.info('UNWRAP OK')
 
-    def pack(self, filepath, margin: float):
+    def pack(self, filepath, margin: float, heuristic_search_time: int=10):
         """
         :param filepath: Absolute path of the mesh which has active UVs to pack.
         :param margin: Pixel margin/UV spacing used to bake texture.
+        :heuristic_search_time: Amount of time to search for a better pack.
         """
         logging.info('START PACK')
         self._raise_path_not_exists(filepath)
-        process = self._run_process('pack.py', filepath, str(margin))
+        process = self._run_process('pack.py', filepath, margin, heuristic_search_time)
         logging.info('PACK OK')
 
     def create_cage(self, high_poly_path, low_poly_path, cage_path):
