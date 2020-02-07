@@ -276,8 +276,8 @@ class OBJECT_OT_automate_bake(Operator):
     bl_label = 'Automate Texture Bake'
     width: IntProperty()
     height: IntProperty()
-    tile_x_size: IntProperty(default=256)
-    tile_y_size: IntProperty(default=256)
+    tile_x: IntProperty(default=256)
+    tile_y: IntProperty(default=256)
     margin: IntProperty()
     output_path: StringProperty()
     high_poly_path: StringProperty()
@@ -314,8 +314,8 @@ class OBJECT_OT_automate_bake(Operator):
         image_node = nodes.new(type='ShaderNodeTexImage')
 
         render_settings = context.scene.render
-        render_settings.tile_x = self.tile_x_size
-        render_settings.tile_y = self.tile_y_size
+        render_settings.tile_x = self.tile_x
+        render_settings.tile_y = self.tile_y
         image_settings = render_settings.image_settings
         image_settings.color_depth = '16'
         image_settings.file_format = 'PNG'

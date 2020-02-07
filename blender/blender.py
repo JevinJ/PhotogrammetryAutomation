@@ -101,8 +101,8 @@ class Blender:
         logging.info('START BAKE')
         self._raise_path_not_exists(high_poly_path, low_poly_path, cage_path, texture_output_path)
         process = self._run_process('bake.py', high_poly_path, low_poly_path, cage_path,
-                                    texture_output_path, base_texture_name, str(width), str(height),
-                                    str(margin), map_types)
+                                    texture_output_path, base_texture_name, map_types,
+                                    width, height, margin, tile_x, tile_y)
         if process.returncode != 0:
             raise RuntimeError(process.stderr)
         logging.info('BAKE OK')
