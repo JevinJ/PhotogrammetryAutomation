@@ -25,7 +25,7 @@ from blender import Blender
 # Get a list of paths to existing high poly meshes. (Absolute, includes extension)
 high_poly_paths = ...
 
-# Create output paths, or existing paths to low poly/cage meshes, depending on which method is used. (Absolute, includes extension)
+# Create output paths, or paths to existing to low poly/cage meshes. (Absolute, includes extension)
 low_poly_paths = ...
 cage_paths = ...
 
@@ -57,8 +57,10 @@ with Blender(blender_path) as blender:
         # Create a baking cage using the low poly
         blender.create_cage(high_poly_path, low_poly_path, cage_path)
         
-        # Bake textures using blender, map_types is a space separated string list of any number of the following:
-        # COMBINED, AO, SHADOW, NORMAL, OS_NORMAL, UV, ROUGHNESS, EMIT, ENVIRONMENT, DIFFUSE, GLOSSY, TRANSMISSION, SUBSURFACE
+        # Bake textures using blender, map_types is a space separated string list of
+        # any number of the following:
+        # COMBINED, AO, SHADOW, NORMAL, OS_NORMAL, UV, ROUGHNESS, EMIT,
+        # ENVIRONMENT, DIFFUSE, GLOSSY, TRANSMISSION, SUBSURFACE
         blender.bake(high_poly_path, low_poly_path, cage_path, texure_path, base_texture_name,
                      width=2048, height=2048, margin=16, map_types='NORMAL DIFFUSE')
 
