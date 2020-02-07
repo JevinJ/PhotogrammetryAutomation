@@ -128,4 +128,4 @@ class Blender:
     def _raise_path_not_exists(self, *paths):
         for path in paths:
             if not Path(path).exists():
-                raise ValueError(f'Path: {path} does not exist.')
+                raise FileNotFoundError(f'Path: {path} does not exist.')
