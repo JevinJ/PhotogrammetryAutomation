@@ -40,10 +40,10 @@ class Blender:
                                         adaptive_size, disallow_intersection)
             if process.returncode == 2 and disallow_intersection:
                 raise SelfIntersectingMeshError('Remesh created a self intersecting mesh, try increasing'
-                                                ' target_count or adaptive_size')
+                                                ' target_count or adaptive_size.')
             logging.info('REMESH OK')
         else:
-            logging.info(f'SKIPPING REMSESH FOR: {low_poly_path}. ALREADY EXISTS')
+            logging.info(f'SKIPPING REMESH FOR: {low_poly_path}. ALREADY EXISTS')
 
     def unwrap(self, filepath):
         """
