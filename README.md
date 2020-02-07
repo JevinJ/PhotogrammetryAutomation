@@ -2,7 +2,7 @@
 API to automatically remesh, unwrap, pack, generate a baking cage, and bake textures of photoscanned meshes in Blender.
 
 This is for my own use, but if you come across this and want to try to use it you are free to do so.
-If you have any issues, let me know and I will fix them.
+If you have any issues, let me know.
 
 ### Requirements
 * [Blender 2.8+](https://www.blender.org)
