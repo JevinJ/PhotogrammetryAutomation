@@ -375,7 +375,7 @@ class OBJECT_OT_generate_lod(Operator):
             decimate.ratio = current_ratio
             current_ratio *= self.level_ratio
 
-        bpy.ops.export_scene.fbx(filename=self.output_path)
+        bpy.ops.export_scene.fbx(filepath=self.output_path)
         return {'FINISHED'}
 
 
