@@ -99,7 +99,8 @@ class Blender:
         :param tile_y: Vertical tile size to use while baking.
         """
         logging.info('START BAKE')
-        self._raise_path_not_exists(high_poly_path, low_poly_path, cage_path, texture_output_path)
+        self._raise_path_not_exists(high_poly_path, low_poly_path, cage_path)
+        Path(texture_output_path).mkdir(parents=True, exist_ok=True)
         process = self._run_process('bake.py', high_poly_path, low_poly_path, cage_path,
                                     texture_output_path, base_texture_name, map_types,
                                     width, height, margin, tile_x, tile_y)
