@@ -108,11 +108,12 @@ class Blender:
             raise RuntimeError(process.stderr)
         logging.info('BAKE OK')
 
-    def _run_process(self, python_filename, *args) -> Popen:
+    def _run_process(self, python_filename: str, *args) -> Popen:
         self.command_count += 1
-        args = [self.blender_path, '--disable-abort-handler', '--python', python_filename, '--'] + list(args)
+        py_program_filepath = Path(__file__).parent / python_filename
+        args = [self.blender_path, '--disable-abort-handler', '--python', py_program_filepath, '--'] + list(args)
         args = list(map(str, args))
-        process = Popen(args=args)
+        process = Popen(args=args, cwd=py_program_filepath.parent)
         process.wait()
         return process
 
