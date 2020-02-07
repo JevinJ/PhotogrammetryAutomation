@@ -366,16 +366,16 @@ class OBJECT_OT_generate_lod(Operator):
             low_poly_obj.select_set(True)
             set_active_by_name(low_poly_obj.name)
             bpy.ops.object.duplicate()
+
             new_lod = context.active_object
             new_lod.name = f'{object_name}_LOD{i}'
             new_lod.data.name = f'{object_name}_LOD{i}'
-            decimate = new_lod.modifiers.new(f'decimate{i}', type='DECIMATE')
+
+            decimate = new_lod.modifiers.new(f'decimate', type='DECIMATE')
             decimate.ratio = current_ratio
             current_ratio *= self.level_ratio
 
-        for obj in context.selected_objects:
-            obj.select_set(True)
-        export_selected(self.output_path)
+        bpy.ops.export_scene.fbx(filename=self.output_path)
         return {'FINISHED'}
 
 
