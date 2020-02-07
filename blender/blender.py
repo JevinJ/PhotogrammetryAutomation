@@ -107,6 +107,14 @@ class Blender:
             raise RuntimeError(process.stderr)
         logging.info('BAKE OK')
 
+    def generate_lod(self, low_poly_path, output_path, number_of_levels=2, level_ratio=.5):
+        logging.info('START GENERATE LOD')
+        self._raise_path_not_exists(low_poly_path)
+        process = self._run_process('generate_lod.py', low_poly_path, output_path, number_of_levels, level_ratio)
+        if process.returncode != 0:
+            raise RuntimeError(process.stderr)
+        logging.info('GENERATE LOD OK')
+
     def _run_process(self, python_filename: str, *args) -> Popen:
         py_program_filepath = Path(__file__).parent / python_filename
         args = [self.blender_path, '--disable-abort-handler', '--python', py_program_filepath, '--'] + list(args)
