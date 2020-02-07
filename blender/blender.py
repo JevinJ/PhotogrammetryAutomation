@@ -90,8 +90,9 @@ class Blender:
         :param texture_output_path: Absolute path to save textures to.
         :param base_texture_name: Base name for textures.
          For example: a normal map for 'MyObject', gives 'MyObject_normal'.
-        :param map_types: Space separated string list of textures to bake.
-         For example: 'NORMAL OS_NORMAL DIFFUSE AO'.
+        :param map_types: Space separated string list of textures to bake. Any combination of:
+         COMBINED, AO, SHADOW, NORMAL, OS_NORMAL, UV, ROUGHNESS, EMIT, ENVIRONMENT, DIFFUSE,
+         GLOSSY, TRANSMISSION, SUBSURFACE.
         :param width: Pixel width of textures.
         :param height: Pixel height of textures.
         :param margin: Pixel/UV margin of textures.
