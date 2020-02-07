@@ -14,7 +14,6 @@ class SelfIntersectingMeshError(Exception): pass
 class Blender:
     def __init__(self, blender_path: str, reprocess_existing=True):
         self.blender_path = os.path.join(blender_path, 'blender.exe')
-        self.command_count = 0
         self.reprocess_existing = reprocess_existing
 
     def __enter__(self):
@@ -109,19 +108,12 @@ class Blender:
         logging.info('BAKE OK')
 
     def _run_process(self, python_filename: str, *args) -> Popen:
-        self.command_count += 1
         py_program_filepath = Path(__file__).parent / python_filename
         args = [self.blender_path, '--disable-abort-handler', '--python', py_program_filepath, '--'] + list(args)
         args = list(map(str, args))
         process = Popen(args=args, cwd=py_program_filepath.parent)
         process.wait()
         return process
-
-    def _fail_process(self, process_type, args, reason):
-        self.failed_commands.append((process_type, args, reason))
-        logging.error(f'{process_type} FAIL')
-        logging.error(pformat(args))
-        logging.error(f'REASON: {reason}')
 
     def _raise_path_not_exists(self, *paths):
         for path in paths:
