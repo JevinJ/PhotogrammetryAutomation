@@ -1,10 +1,11 @@
 # PhotogrammetryAutomation
-API to automatically remesh, unwrap, pack, generate a baking cage, and bake textures of photoscanned meshes in Blender.
+Python API to automatically remesh, unwrap, pack, generate a baking cage, and bake textures of photoscanned meshes in Blender.
 
 This is for my own use, but if you come across this and want to try it out you are free to do so.
 If you have any issues, let me know.
 
 ### Requirements
+* Python 3.6+
 * [Blender 2.8+](https://www.blender.org)
 * [QuadRemesher by Exoside](https://exoside.com/quadremesher)
 * [UVPackMaster2 Pro or Standard by glukoz](https://gumroad.com/l/uvpackmaster2)
