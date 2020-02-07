@@ -24,7 +24,9 @@ def rename_active(name):
 
 
 def export_selected(filepath):
-    bpy.ops.export_scene.obj(filepath=filepath, use_selection=True, check_existing=False)
+    exporters = {'.obj': bpy.ops.export_scene.obj, '.fbx': bpy.ops.export_scene.fbx}
+    extension = Path(filepath).suffix
+    exporters[extension](filepath=filepath, use_selection=True, check_existing=True)
 
 
 def import_from_path(filepath):
@@ -339,6 +341,41 @@ class OBJECT_OT_automate_bake(Operator):
         bpy.ops.object.bake(type=map_type, use_selected_to_active=True, cage_object=self.cage_name,
                             use_cage=True, margin=self.margin, normal_space=normal_space,
                             pass_filter={'COLOR'})
+
+
+class OBJECT_OT_generate_lod(Operator):
+    bl_idname = 'object.generate_lod'
+    bl_label = 'Automate LOD Creation'
+    low_poly_path: StringProperty()
+    output_path: StringProperty()
+    number_of_levels: IntProperty(default=1)
+    level_ratio: FloatProperty(default=.5)
+
+    def execute(self, context):
+        import_from_path(self.low_poly_path)
+        name = name_from_path(self.low_poly_path)
+
+        low_poly_obj = context.selected_objects[0]
+        low_poly_obj.name = f'{name}_LOD0'
+        low_poly_obj.data.name = f'{name}_LOD0'
+        low_poly_obj.active_material.name = self.name
+
+        current_ratio = self.level_ratio
+        for i in range(1, self.number_of_levels):
+            bpy.ops.object.select_all(action='DESELECT')
+            low_poly_obj.select_set(True)
+            set_active_by_name(low_poly_obj.name)
+            bpy.ops.object.duplicate()
+            new_lod = context.active_object
+            new_lod.name = f'{name}_LOD{i}'
+            new_lod.data.name = f'{name}_LOD{i}'
+            decimate = new_lod.modifiers.new(f'decimate{i}', type='DECIMATE')
+            decimate.ratio = current_ratio
+            current_ratio *= self.level_ratio
+
+
+        bpy.ops.export_scene.fbx(filepath=self.output_path)
+        return {'FINISHED'}
 
 
 class WM_OT_exit(Operator):
