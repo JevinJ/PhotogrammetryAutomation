@@ -353,12 +353,12 @@ class OBJECT_OT_generate_lod(Operator):
 
     def execute(self, context):
         import_from_path(self.low_poly_path)
-        name = name_from_path(self.low_poly_path)
+        object_name = name_from_path(self.output_path)
 
         low_poly_obj = context.selected_objects[0]
-        low_poly_obj.name = f'{name}_LOD0'
-        low_poly_obj.data.name = f'{name}_LOD0'
-        low_poly_obj.active_material.name = self.name
+        low_poly_obj.name = f'{object_name}_LOD0'
+        low_poly_obj.data.name = f'{object_name}_LOD0'
+        low_poly_obj.active_material.name = object_name
 
         current_ratio = self.level_ratio
         for i in range(1, self.number_of_levels):
@@ -367,14 +367,15 @@ class OBJECT_OT_generate_lod(Operator):
             set_active_by_name(low_poly_obj.name)
             bpy.ops.object.duplicate()
             new_lod = context.active_object
-            new_lod.name = f'{name}_LOD{i}'
-            new_lod.data.name = f'{name}_LOD{i}'
+            new_lod.name = f'{object_name}_LOD{i}'
+            new_lod.data.name = f'{object_name}_LOD{i}'
             decimate = new_lod.modifiers.new(f'decimate{i}', type='DECIMATE')
             decimate.ratio = current_ratio
             current_ratio *= self.level_ratio
 
-
-        bpy.ops.export_scene.fbx(filepath=self.output_path)
+        for obj in context.selected_objects:
+            obj.select_set(True)
+        export_selected(self.output_path)
         return {'FINISHED'}
 
 
