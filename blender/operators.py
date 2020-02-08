@@ -309,11 +309,15 @@ class OBJECT_OT_automate_bake(Operator):
         bpy.ops.object.shade_smooth()
         set_active_by_name(low_poly_name)
 
-        active_material = context.active_object.active_material
-        nodes = active_material.node_tree.nodes
-        for node in nodes:
-            nodes.remove(node)
-        image_node = nodes.new(type='ShaderNodeTexImage')
+        low_poly_mat = low_poly_obj.active_material
+        bpy.data.materials.remove(low_poly_mat, do_unlink=True)
+        low_poly_mat = bpy.data.materials.new(low_poly_name)
+        low_poly_obj.active_material = low_poly_mat
+
+        low_poly_mat.use_nodes = True
+        nodes = low_poly_mat.node_tree.nodes
+        node_links = low_poly_mat.node_tree.links
+        principled_node = nodes['Principled BSDF']
 
         render_settings = context.scene.render
         render_settings.tile_x = self.tile_x
@@ -324,17 +328,31 @@ class OBJECT_OT_automate_bake(Operator):
         image_settings.color_mode = 'RGBA'
         image_settings.compression = 15
         image_settings.quality = 100
+
         for map_type in self.map_types.split():
             image_name = f'{self.base_texture_name}_{map_type.lower()}.png'
             image = bpy.data.images.new(image_name, alpha=True, width=self.width, height=self.height)
             image.filepath = os.path.join(self.output_path, image_name)
+
+            image_node = low_poly_mat.node_tree.nodes.new(type='ShaderNodeTexImage')
             image_node.image = image
 
             if map_type == 'OS_NORMAL':
                 self._bake(map_type='NORMAL', normal_space='OBJECT')
             else:
                 self._bake(map_type)
+
+            if map_type == 'DIFFUSE':
+                node_links.new(image_node.outputs['Color'], principled_node.inputs['Base Color'])
+            elif map_type == 'NORMAL':
+                normal_map_node = low_poly_mat.node_tree.nodes.new('ShaderNodeNormalMap')
+                node_links.new(image_node.outputs['Color'], normal_map_node.inputs['Color'])
+                node_links.new(normal_map_node.outputs['Normal'], principled_node.inputs['Normal'])
             image.save()
+
+        bpy.ops.object.select_all(action='DESELECT')
+        low_poly_obj.select_set(True)
+        export_selected(self.low_poly_path)
         return {'FINISHED'}
 
     def _bake(self, map_type, normal_space='TANGENT'):
