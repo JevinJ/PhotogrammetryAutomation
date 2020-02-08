@@ -334,21 +334,22 @@ class OBJECT_OT_automate_bake(Operator):
             image = bpy.data.images.new(image_name, alpha=True, width=self.width, height=self.height)
             image.filepath = os.path.join(self.output_path, image_name)
 
-            image_node = low_poly_mat.node_tree.nodes.new(type='ShaderNodeTexImage')
+            image_node = nodes.new(type='ShaderNodeTexImage')
             image_node.image = image
+            nodes.active = image_node
 
             if map_type == 'OS_NORMAL':
                 self._bake(map_type='NORMAL', normal_space='OBJECT')
             else:
                 self._bake(map_type)
+            image.save()
 
             if map_type == 'DIFFUSE':
                 node_links.new(image_node.outputs['Color'], principled_node.inputs['Base Color'])
             elif map_type == 'NORMAL':
-                normal_map_node = low_poly_mat.node_tree.nodes.new('ShaderNodeNormalMap')
+                normal_map_node = nodes.new('ShaderNodeNormalMap')
                 node_links.new(image_node.outputs['Color'], normal_map_node.inputs['Color'])
                 node_links.new(normal_map_node.outputs['Normal'], principled_node.inputs['Normal'])
-            image.save()
 
         bpy.ops.object.select_all(action='DESELECT')
         low_poly_obj.select_set(True)
