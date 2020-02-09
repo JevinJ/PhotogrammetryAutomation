@@ -1,7 +1,6 @@
 import logging
 import os
 from pathlib import Path
-from pprint import pformat
 from subprocess import DEVNULL, PIPE, Popen
 
 
