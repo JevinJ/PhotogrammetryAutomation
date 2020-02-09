@@ -32,7 +32,7 @@ class Blender:
         :param hard_edges_by_angle: Detect hard edges by angle.
         :param disallow_intersection: If resulting mesh self intersects, throw SelfIntersectingMeshError.
         """
-        self._raise_path_not_exists(high_poly_path)
+        self._create_path_not_exists(high_poly_path)
         if self.reprocess_existing or not Path(low_poly_path).exists():
             logging.info('START REMESH')
             process = self._run_process('remesh.py', high_poly_path, low_poly_path, target_count,
@@ -49,7 +49,7 @@ class Blender:
         :param filepath: Absolute path of the mesh to unwrap UVs for.
         """
         logging.info('START UNWRAP')
-        self._raise_path_not_exists(filepath)
+        self._create_path_not_exists(filepath)
         process = self._run_process('unwrap.py', filepath)
         logging.info('UNWRAP OK')
 
@@ -60,7 +60,7 @@ class Blender:
         :heuristic_search_time: Amount of time to search for a better pack.
         """
         logging.info('START PACK')
-        self._raise_path_not_exists(filepath)
+        self._create_path_not_exists(filepath)
         process = self._run_process('pack.py', filepath, margin, heuristic_search_time)
         logging.info('PACK OK')
 
@@ -72,7 +72,7 @@ class Blender:
         """
         if self.reprocess_existing or not Path(cage_path).exists():
             logging.info('START CREATE CAGE')
-            self._raise_path_not_exists(high_poly_path, low_poly_path)
+            self._create_path_not_exists(high_poly_path, low_poly_path)
             process = self._run_process('create_cage.py', high_poly_path, low_poly_path, cage_path)
             if process.returncode == 2:
                 raise SelfIntersectingMeshError(f'Low poly at: {low_poly_path} is self intersecting.'
@@ -100,8 +100,7 @@ class Blender:
         :param tile_y: Vertical tile size to use while baking.
         """
         logging.info('START BAKE')
-        self._raise_path_not_exists(high_poly_path, low_poly_path, cage_path)
-        Path(texture_output_path).mkdir(parents=True, exist_ok=True)
+        self._create_path_not_exists(high_poly_path, low_poly_path, cage_path, texture_output_path)
         process = self._run_process('bake.py', high_poly_path, low_poly_path, cage_path,
                                     texture_output_path, base_texture_name, map_types,
                                     width, height, margin, tile_x, tile_y)
@@ -111,7 +110,7 @@ class Blender:
 
     def generate_lod(self, low_poly_path, output_path, number_of_levels=2, level_ratio=.5):
         logging.info('START GENERATE LOD')
-        self._raise_path_not_exists(low_poly_path)
+        self._create_path_not_exists(low_poly_path)
         process = self._run_process('generate_lod.py', low_poly_path, output_path, number_of_levels, level_ratio)
         if process.returncode != 0:
             raise RuntimeError(process.stderr)
@@ -125,7 +124,11 @@ class Blender:
         process.wait()
         return process
 
-    def _raise_path_not_exists(self, *paths):
+    def _create_path_not_exists(self, *paths):
         for path in paths:
-            if not Path(path).exists():
-                raise FileNotFoundError(f'Path: {path} does not exist.')
+            path = Path(path)
+            if not path.exists():
+                if path.is_dir():
+                    Path(path).mkdir(parents=True, exist_ok=True)
+                elif path.parent.is_dir():
+                    Path(path.parent).mkdir(parents=True, exist_ok=True)
