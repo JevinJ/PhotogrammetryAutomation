@@ -23,20 +23,21 @@ class Blender:
         pass
 
     def remesh(self, high_poly_path, low_poly_path, target_count=5000, adaptive_size=50,
-               disallow_intersection=True):
+               hard_edges_by_angle=True, disallow_intersection=True):
         """
         :param high_poly_path: Absolute path of the high poly .obj to remesh.
         :param low_poly_path: Absolute path to export the resulting .obj to.
         :param target_count: Desired number of quads.
         :param adaptive_size: How much quad size adapts locally to curvature. 0 gives uniform
          quad size.
+        :param hard_edges_by_angle: Detect hard edges by angle.
         :param disallow_intersection: If resulting mesh self intersects, throw SelfIntersectingMeshError.
         """
         self._raise_path_not_exists(high_poly_path)
         if self.reprocess_existing or not Path(low_poly_path).exists():
             logging.info('START REMESH')
             process = self._run_process('remesh.py', high_poly_path, low_poly_path, target_count,
-                                        adaptive_size, disallow_intersection)
+                                        adaptive_size, hard_edges_by_angle, disallow_intersection)
             if process.returncode == 2 and disallow_intersection:
                 raise SelfIntersectingMeshError('Remesh created a self intersecting mesh, try increasing'
                                                 ' target_count or adaptive_size.')

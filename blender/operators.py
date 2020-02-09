@@ -77,6 +77,7 @@ class OBJECT_OT_automate_remesh(Operator):
     low_poly_path: StringProperty()
     target_count = IntProperty(default=5000)
     adaptive_size = IntProperty(default=50)
+    hard_edges_by_angle = BoolProperty(default=True)
     disallow_intersecting = BoolProperty(default=True)
 
     def execute(self, context):
@@ -87,6 +88,7 @@ class OBJECT_OT_automate_remesh(Operator):
         props = context.scene.qremesher
         props.target_count = self.target_count
         props.adaptive_size = self.adaptive_size
+        props.autodetect_hard_edges = self.hard_edges_by_angle
 
         context.window_manager.modal_handler_add(self)
         return bpy.ops.qremesher.remesh()
